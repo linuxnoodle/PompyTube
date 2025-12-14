@@ -69,14 +69,14 @@ function createWindow() {
   // Load YouTube TV
   mainWindow.loadURL('https://www.youtube.com/tv#/');
 
-  // Force fullscreen on first load if configured to do so
-  if (windowConfig.fullscreen) {
-    setTimeout(() => {
-      if (mainWindow && !mainWindow.isDestroyed()) {
-        mainWindow.setFullScreen(true);
-      }
-    }, 100);
-  }
+  // Always start in fullscreen mode (force override)
+  setTimeout(() => {
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      mainWindow.setFullScreen(true);
+      // Also update the config to ensure consistency
+      configStore.set('window.fullscreen', true);
+    }
+  }, 100);
 
   // Set custom user agent to emulate Smart TV
   mainWindow.webContents.setUserAgent('Mozilla/5.0 (WebOS; SmartTV) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5283.0 Safari/537.36');
