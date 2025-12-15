@@ -43,6 +43,14 @@ pnpm dist
 - **Enter**: Select
 - **Space**: Play/Pause
 
+### Microphone Support
+PompyTube now supports microphone access for YouTube TV features such as:
+- Voice search
+- Voice commands
+- Voice control features
+
+Microphone access can be controlled via the `enableMicrophoneAccess` configuration setting. When enabled, the app will automatically grant microphone permissions when requested by YouTube TV.
+
 ### Configuration
 The app stores all configuration in a persistent store. You can access settings through:
 
@@ -78,7 +86,8 @@ All features can be toggled and configured:
     "hideWatchedVideosThreshold": 80,
     "enableHideEndScreenCards": false,
     "enableYouThereRenderer": true,
-    "enablePaidPromotionOverlay": true
+    "enablePaidPromotionOverlay": true,
+    "enableMicrophoneAccess": true
   }
 }
 ```
@@ -93,7 +102,7 @@ This starts the app with remote debugging enabled on port 8315. You can connect 
 
 ### Architecture Overview
 ```
-electron-app/
+PompyTube/
 ├── main.js                # Main Electron process (window management, config)
 ├── preload.js             # Preload script for secure IPC communication
 ├── pompytube/             # PompyTube feature implementations
@@ -109,7 +118,7 @@ electron-app/
 ```
 ### Core Technologies
 - **[Electron](https://www.electronjs.org/)**: The framework that makes this cross-platform app possible
-- **[PompyTube](https://github.com/reis-c/tizentube)**: The original smart TV YouTube enhancement project
+- **[TizenTube](https://github.com/reisxd/tizentube)**: The original smart TV YouTube enhancement project
 - **[SponsorBlock](https://sponsor.ajay.app/)**: The community-driven sponsor skipping database
 - **[electron-store](https://github.com/sindresorhus/electron-store)**: Simple data persistence
 - **[electron-builder](https://www.electron.build/)**: Professional packaging and distribution

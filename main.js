@@ -44,7 +44,9 @@ const configStore = new ElectronStore({
       themeBorderColor: '#2a2a2a',
       themeTextPrimary: '#ffffff',
       themeTextSecondary: '#b8b8b8',
-      themeAccentColor: '#4CAF50'
+      themeAccentColor: '#4CAF50',
+      // Microphone settings
+      enableMicrophoneAccess: true
     }
   }
 });
@@ -66,7 +68,12 @@ function createWindow() {
       contextIsolation: true,
       sandbox: true,
       webviewTag: false,
-      partition: 'persist:pompytube'
+      partition: 'persist:pompytube',
+      // Enable media features for microphone access
+      webSecurity: true,
+      experimentalFeatures: false,
+      enableWebSQL: false,
+      enableBlinkFeatures: 'MediaStreamTrack'
     },
     icon: path.join(__dirname, 'assets', 'icon.png'),
     title: 'PompyTube',
@@ -120,6 +127,40 @@ function createWindow() {
       event.preventDefault();
       mainWindow.loadURL('https://www.youtube.com/tv#/');
     }
+  });
+
+  // Handle media permissions for microphone access
+  mainWindow.webContents.session.setPermissionRequestHandler((webContents, permission, callback, details) => {
+    const requestingUrl = webContents.getURL();
+    const features = configStore.get('features');
+
+    // Handle microphone permissions for YouTube TV
+    if (permission === 'media' && requestingUrl.includes('youtube.com')) {
+      if (details.mediaTypes && details.mediaTypes.includes('microphone')) {
+        if (features.enableMicrophoneAccess) {
+          console.log('Granting microphone permission for YouTube TV');
+          callback(true); // Grant permission
+          return;
+        } else {
+          console.log('Microphone access disabled in settings');
+          callback(false); // Deny permission
+          return;
+        }
+      }
+    }
+
+    // Deny other media permissions by default for security
+    console.log(`Denying ${permission} permission for ${requestingUrl}`);
+    callback(false);
+  });
+
+  // Handle media access events
+  mainWindow.webContents.on('media-started-playing', () => {
+    console.log('Media playback started');
+  });
+
+  mainWindow.webContents.on('media-paused', () => {
+    console.log('Media playback paused');
   });
 }
 
