@@ -5,7 +5,7 @@ const { autoUpdater } = require('electron-updater');
 
 // Create configuration store
 const configStore = new ElectronStore({
-  name: 'youtube-tv-config',
+  name: 'pompytube-config',
   defaults: {
       window: {
         width: 1280,
@@ -66,7 +66,7 @@ function createWindow() {
       contextIsolation: true,
       sandbox: true,
       webviewTag: false,
-      partition: 'persist:youtubetv'
+      partition: 'persist:pompytube'
     },
     icon: path.join(__dirname, 'assets', 'icon.png'),
     title: 'PompyTube',

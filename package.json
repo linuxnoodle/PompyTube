@@ -1,7 +1,7 @@
 {
-  "name": "youtube-tv-electron",
-  "version": "1.0.0",
-  "description": "YouTube TV Electron Client with PompyTube Features",
+  "name": "pompytube-electron",
+  "version": "1.1.0",
+  "description": "YouTube TV Electron Client",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
@@ -27,8 +27,8 @@
     "concurrently": "^8.2.1"
   },
   "build": {
-    "appId": "com.electron.youtubetv",
-    "productName": "YouTube TV Enhanced",
+    "appId": "com.electron.pompytube",
+    "productName": "PompyTube",
     "files": [
       "**/*",
       "node_modules/**/*"
