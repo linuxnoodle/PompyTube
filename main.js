@@ -1,55 +1,90 @@
 const { app, BrowserWindow, ipcMain, globalShortcut } = require('electron');
 const path = require('path');
-const ElectronStore = require('electron-store');
+const fs = require('fs');
 const { autoUpdater } = require('electron-updater');
 
-// Create configuration store
-const configStore = new ElectronStore({
-  name: 'pompytube-config',
-  defaults: {
+// Simple configuration store using fs
+class ConfigStore {
+  constructor() {
+    this.configPath = path.join(app.getPath('userData'), 'pompytube-config.json');
+    this.defaults = {
       window: {
         width: 1280,
         height: 720,
         fullscreen: true
       },
-    features: {
-      enableAdBlock: true,
-      enableSponsorBlock: true,
-      sponsorBlockManualSkips: ['intro', 'outro', 'filler'],
-      enableSponsorBlockSponsor: true,
-      enableSponsorBlockIntro: true,
-      enableSponsorBlockOutro: true,
-      enableSponsorBlockInteraction: true,
-      enableSponsorBlockSelfPromo: true,
-      enableSponsorBlockPreview: true,
-      enableSponsorBlockMusicOfftopic: true,
-      enableSponsorBlockFiller: false,
-      enableDeArrow: true,
-      enableDeArrowThumbnails: false,
-      preferredVideoQuality: 'auto',
-      videoPreferredCodec: 'vp9',
-      enableChapters: true,
-      enableLongPress: true,
-      enableShorts: true,
-      enablePreviews: true,
-      enableHideWatchedVideos: false,
-      hideWatchedVideosThreshold: 80,
-      hideWatchedVideosPages: [],
-      enableHideEndScreenCards: false,
-      enableYouThereRenderer: true,
-      enablePaidPromotionOverlay: true,
-      enableSpecialTheme: true,
-      themePrimaryColor: '#0f0f0f',
-      themeSecondaryColor: '#1a1a1a',
-      themeBorderColor: '#2a2a2a',
-      themeTextPrimary: '#ffffff',
-      themeTextSecondary: '#b8b8b8',
-      themeAccentColor: '#4CAF50',
-      // Microphone settings
-      enableMicrophoneAccess: true
+      features: {
+        enableAdBlock: true,
+        enableSponsorBlock: true,
+        sponsorBlockManualSkips: ['intro', 'outro', 'filler'],
+        enableSponsorBlockSponsor: true,
+        enableSponsorBlockIntro: true,
+        enableSponsorBlockOutro: true,
+        enableSponsorBlockInteraction: true,
+        enableSponsorBlockSelfPromo: true,
+        enableSponsorBlockPreview: true,
+        enableSponsorBlockMusicOfftopic: true,
+        enableSponsorBlockFiller: false,
+        enableDeArrow: true,
+        enableDeArrowThumbnails: false,
+        preferredVideoQuality: 'auto',
+        videoPreferredCodec: 'vp9',
+        enableChapters: true,
+        enableLongPress: true,
+        enableShorts: true,
+        enablePreviews: true,
+        enableHideWatchedVideos: false,
+        hideWatchedVideosThreshold: 80,
+        hideWatchedVideosPages: [],
+        enableHideEndScreenCards: false,
+        enableYouThereRenderer: true,
+        enablePaidPromotionOverlay: true,
+        enableSpecialTheme: true,
+        themePrimaryColor: '#0f0f0f',
+        themeSecondaryColor: '#1a1a1a',
+        themeBorderColor: '#2a2a2a',
+        themeTextPrimary: '#ffffff',
+        themeTextSecondary: '#b8b8b8',
+        themeAccentColor: '#4CAF50',
+        // Microphone settings
+        enableMicrophoneAccess: true
+      }
+    };
+    this.config = this.loadConfig();
+  }
+
+  loadConfig() {
+    try {
+      if (fs.existsSync(this.configPath)) {
+        const data = fs.readFileSync(this.configPath, 'utf8');
+        return { ...this.defaults, ...JSON.parse(data) };
+      }
+    } catch (error) {
+      console.error('Failed to load config:', error);
+    }
+    return { ...this.defaults };
+  }
+
+  saveConfig() {
+    try {
+      fs.writeFileSync(this.configPath, JSON.stringify(this.config, null, 2));
+    } catch (error) {
+      console.error('Failed to save config:', error);
     }
   }
-});
+
+  get(key) {
+    return key ? this.config[key] : this.config;
+  }
+
+  set(key, value) {
+    this.config[key] = value;
+    this.saveConfig();
+  }
+}
+
+// Create configuration store
+const configStore = new ConfigStore();
 
 // Global reference to main window
 let mainWindow;
